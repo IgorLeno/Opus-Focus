@@ -1,0 +1,334 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-color: var(--aoe-dark-blue);
+    color: var(--aoe-light);
+    font-family: "Inter", sans-serif;
+  }
+}
+
+/* Age of Empires IV Theme */
+:root {
+  --aoe-dark-blue: #0a1929;
+  --aoe-panel: #0f2135;
+  --aoe-border: #3a4b5c;
+  --aoe-gold: #d4b374;
+  --aoe-light: #e0e0e0;
+  --aoe-muted: #8a9bab;
+  --aoe-accent: #4caf50;
+  --aoe-red: #f44336;
+  --aoe-button: #1a3045;
+  --aoe-button-hover: #254055;
+}
+
+/* Background image for the app */
+.bg-aoe-bg {
+  background-image: url("/placeholder.svg?height=1080&width=1920");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: var(--aoe-dark-blue);
+}
+
+/* Map background */
+.bg-aoe-map-bg {
+  background-image: url("/placeholder.svg?height=400&width=800");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  background-color: var(--aoe-dark-blue);
+}
+
+/* Panel header styling */
+.aoe4-panel-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--aoe-border);
+  background: linear-gradient(to right, rgba(212, 179, 116, 0.1), rgba(10, 25, 41, 0));
+}
+
+/* Top menu styling */
+.aoe4-top-menu {
+  background-color: var(--aoe-dark-blue);
+}
+
+/* Top menu styling */
+.aoe4-top-menu {
+  background-color: var(--aoe-dark-blue);
+  border-bottom: 1px solid var(--aoe-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.aoe4-menu-item {
+  padding: 0.5rem 1rem;
+  color: var(--aoe-muted);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+  font-family: "Cinzel", serif;
+}
+
+.aoe4-menu-item:hover {
+  color: var(--aoe-light);
+}
+
+.aoe4-menu-item.active {
+  color: var(--aoe-gold);
+}
+
+.aoe4-menu-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--aoe-gold);
+}
+
+.aoe4-icon-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--aoe-muted);
+  transition: all 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.aoe4-icon-button:hover {
+  color: var(--aoe-gold);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Slow pulse animation */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scrollbar styling */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--aoe-dark-blue);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--aoe-border);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--aoe-muted);
+}
+
+/* AoE4 Panel Styling */
+.aoe4-panel {
+  background-color: var(--aoe-panel);
+  border: 1px solid var(--aoe-border);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Card styling */
+.card {
+  background-color: var(--aoe-panel);
+  border: 1px solid var(--aoe-border);
+  border-radius: 0.375rem;
+}
+
+/* Progress bar styling */
+.progress-bar {
+  height: 0.5rem;
+  background-color: rgba(212, 179, 116, 0.2);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--aoe-gold);
+  border-radius: 0.25rem;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--aoe-gold);
+  font-family: "Cinzel", serif;
+}
+
+/* Force dark theme */
+.bg-white,
+.bg-gray-50,
+.bg-gray-100,
+.bg-gray-200 {
+  background-color: var(--aoe-panel) !important;
+}
+
+.text-gray-700,
+.text-gray-800,
+.text-gray-900,
+.text-black {
+  color: var(--aoe-light) !important;
+}
+
+.border-gray-200,
+.border-gray-300 {
+  border-color: var(--aoe-border) !important;
+}
+
+/* Ensure all panels use the AoE theme */
+.panel,
+.card,
+.box,
+section,
+aside,
+.container {
+  background-color: var(--aoe-panel);
+  border-color: var(--aoe-border);
+  color: var(--aoe-light);
+}
+
+/* Ensure all buttons follow the theme */
+button,
+.button,
+[type="button"],
+[type="submit"] {
+  background-color: var(--aoe-button);
+  border-color: var(--aoe-border);
+  color: var(--aoe-light);
+}
+
+button:hover,
+.button:hover,
+[type="button"]:hover,
+[type="submit"]:hover {
+  background-color: var(--aoe-button-hover);
+}
+
+/* Ensure all links follow the theme */
+a {
+  color: var(--aoe-gold);
+}
+
+a:hover {
+  color: var(--aoe-light);
+}
+
+/* Ensure all inputs follow the theme */
+input,
+select,
+textarea {
+  background-color: var(--aoe-dark-blue);
+  border-color: var(--aoe-border);
+  color: var(--aoe-light);
+}
+
+/* Ensure all progress bars follow the theme */
+progress,
+.progress {
+  background-color: var(--aoe-dark-blue);
+}
+
+progress::-webkit-progress-value,
+.progress-value {
+  background-color: var(--aoe-gold);
+}
+
+progress::-moz-progress-bar {
+  background-color: var(--aoe-gold);
+}
+
+/* Ensure all tables follow the theme */
+table {
+  background-color: var(--aoe-panel);
+  border-color: var(--aoe-border);
+  color: var(--aoe-light);
+}
+
+th {
+  background-color: var(--aoe-dark-blue);
+  color: var(--aoe-gold);
+}
+
+tr:nth-child(even) {
+  background-color: rgba(10, 25, 41, 0.5);
+}
+
+/* Ensure all list items follow the theme */
+li {
+  color: var(--aoe-light);
+}
+
+/* Ensure all icons follow the theme */
+svg,
+.icon {
+  color: var(--aoe-gold);
+}
+
+/* Ensure all badges follow the theme */
+.badge {
+  background-color: var(--aoe-dark-blue);
+  color: var(--aoe-gold);
+  border: 1px solid var(--aoe-border);
+}
