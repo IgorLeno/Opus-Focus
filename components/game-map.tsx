@@ -599,6 +599,7 @@ export function GameMap() {
   const [showConquestNotification, setShowConquestNotification] = useState(false)
   const [conqueredRegion, setConqueredRegion] = useState(null)
   const [completedTaskEffect, setCompletedTaskEffect] = useState(null)
+  const [isMounted, setIsMounted] = useState(false)
   const mapRef = useRef(null)
   const { toast } = useToast()
 
@@ -607,6 +608,11 @@ export function GameMap() {
   const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 })
   const [isMapDragging, setIsMapDragging] = useState(false)
   const [mapDragStart, setMapDragStart] = useState({ x: 0, y: 0 })
+
+  // Use useEffect to ensure window is only accessed after component mount
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Verificar se uma região está completamente conquistada
   const isRegionConquered = (regionId) => {
@@ -636,7 +642,7 @@ export function GameMap() {
   const handleStartTask = () => {
     if (selectedTask) {
       // Em um app real, isso navegaria para a página da tarefa
-      window.location.href = `/task?id=${selectedTask.id}`
+      console.log(`Navegando para /task?id=${selectedTask.id}`)
     }
     setSelectedTask(null)
   }
@@ -741,7 +747,7 @@ export function GameMap() {
 
     // Lançar confetes
     try {
-      if (typeof window !== "undefined") {
+      if (typeof window !== "undefined" && isMounted) {
         import("canvas-confetti")
           .then((confettiModule) => {
             const confetti = confettiModule.default
@@ -848,6 +854,8 @@ export function GameMap() {
 
   // Adicionar e remover event listeners
   useEffect(() => {
+    if (!isMounted) return
+
     document.addEventListener("mousemove", handleMouseMove)
     document.addEventListener("mouseup", handleMouseUp)
 
@@ -855,7 +863,7 @@ export function GameMap() {
       document.removeEventListener("mousemove", handleMouseMove)
       document.removeEventListener("mouseup", handleMouseUp)
     }
-  }, [isDragging, dragStart])
+  }, [isDragging, dragStart, isMounted])
 
   const handleRegionClick = (region: Region) => {
     if (region.status !== "locked") {
@@ -955,15 +963,14 @@ export function GameMap() {
     )
   }
 
-  // Adicionar log para debug
-  useEffect(() => {
-    console.log("Estado atual:", {
-      conquestEffect,
-      showConquestNotification,
-      conqueredRegion,
-      completedTaskEffect,
-    })
-  }, [conquestEffect, showConquestNotification, conqueredRegion, completedTaskEffect])
+  // Se o componente não estiver montado (server-side), retorne um estado de carregamento
+  if (!isMounted) {
+    return (
+      <div className="relative h-full w-full overflow-hidden flex items-center justify-center">
+        <p className="text-muted-foreground">Carregando mapa de jogo...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="relative h-full w-full overflow-hidden">

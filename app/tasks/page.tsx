@@ -1,237 +1,372 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { TopMenu } from "@/components/top-menu"
 import { AoE4Panel } from "@/components/aoe4-panel"
 import { AoE4Button } from "@/components/aoe4-button"
-import { TaskMap } from "@/components/task-map"
-import { PlusIcon, FilterIcon, SearchIcon, MapIcon, ListIcon } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import {
+  Plus,
+  Search,
+  Filter,
+  ChevronDown,
+  Edit,
+  Trash2,
+  BookOpen,
+  Video,
+  Code,
+  FileText,
+  CheckCircle,
+  X,
+} from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-// Dados de exemplo para tarefas
-const tasks = [
+// Tipos para as tarefas
+interface Task {
+  id: string
+  title: string
+  type: string
+  difficulty: "Fácil" | "Médio" | "Difícil"
+  points: number
+  validation: string
+}
+
+// Dados de exemplo para as tarefas
+const sampleTasks: Task[] = [
   {
-    id: "t1",
-    title: "Pesquisar referências",
-    description: "Encontrar artigos e livros sobre o tema do projeto",
-    status: "completed",
-    priority: "high",
-    dueDate: "2025-04-25",
-    map: "Projeto Final",
-    dependencies: [],
+    id: "task1",
+    title: "Artigo sobre algoritmos de machine learning",
+    type: "Leitura",
+    difficulty: "Fácil",
+    points: 25,
+    validation: "Quiz",
   },
   {
-    id: "t2",
-    title: "Escrever introdução",
-    description: "Redigir a introdução do trabalho com base nas referências",
-    status: "in-progress",
-    priority: "high",
-    dueDate: "2025-04-28",
-    map: "Projeto Final",
-    dependencies: ["t1"],
+    id: "task2",
+    title: "Aula de React Hooks",
+    type: "Vídeo do YouTube",
+    difficulty: "Médio",
+    points: 50,
+    validation: "Tempo",
   },
   {
-    id: "t3",
-    title: "Criar slides de apresentação",
-    description: "Preparar slides para a apresentação do projeto",
-    status: "not-started",
-    priority: "medium",
-    dueDate: "2025-05-05",
-    map: "Projeto Final",
-    dependencies: ["t2"],
+    id: "task3",
+    title: "Implementar algoritmo de ordenação",
+    type: "Código",
+    difficulty: "Difícil",
+    points: 75,
+    validation: "Nenhum",
   },
   {
-    id: "t4",
-    title: "Praticar vocabulário",
-    description: "Revisar as palavras novas da semana",
-    status: "in-progress",
-    priority: "medium",
-    dueDate: "2025-04-26",
-    map: "Aprendizado de Inglês",
-    dependencies: [],
+    id: "task4",
+    title: "Revisão de Flash Cards",
+    type: "NotebookLM",
+    difficulty: "Fácil",
+    points: 30,
+    validation: "Tempo",
   },
   {
-    id: "t5",
-    title: "Assistir vídeo-aula",
-    description: "Ver a aula sobre gramática avançada",
-    status: "not-started",
-    priority: "low",
-    dueDate: "2025-04-30",
-    map: "Aprendizado de Inglês",
-    dependencies: [],
+    id: "task5",
+    title: "Estudo de Estrutura de Dados",
+    type: "Leitura",
+    difficulty: "Médio",
+    points: 45,
+    validation: "Quiz",
+  },
+  {
+    id: "task6",
+    title: "Curso de Python Básico",
+    type: "Curso",
+    difficulty: "Fácil",
+    points: 35,
+    validation: "Quiz",
+  },
+  {
+    id: "task7",
+    title: "Construir um Dashboard",
+    type: "Código",
+    difficulty: "Difícil",
+    points: 80,
+    validation: "Nenhum",
+  },
+  {
+    id: "task8",
+    title: "Leitura sobre Design Patterns",
+    type: "Leitura",
+    difficulty: "Médio",
+    points: 55,
+    validation: "Tempo",
   },
 ]
 
 export default function TasksPage() {
-  const [viewMode, setViewMode] = useState<"list" | "map">("map")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filter, setFilter] = useState({
-    status: "all", // all, completed, in-progress, not-started
-    priority: "all", // all, high, medium, low
-    map: "all",
-  })
+  const [tasks, setTasks] = useState<Task[]>(sampleTasks)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [activeFilters, setActiveFilters] = useState<string[]>([])
+  const [isMounted, setIsMounted] = useState(false)
 
-  // Filtrar tarefas com base no termo de pesquisa e filtros
+  // Usar useEffect para garantir que o código só execute no cliente
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Filtrar tarefas com base na pesquisa e filtros
   const filteredTasks = tasks.filter((task) => {
-    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = filter.status === "all" || task.status === filter.status
-    const matchesPriority = filter.priority === "all" || task.priority === filter.priority
-    const matchesMap = filter.map === "all" || task.map === filter.map
+    // Filtrar por pesquisa
+    if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false
+    }
 
-    return matchesSearch && matchesStatus && matchesPriority && matchesMap
+    // Filtrar por tipo
+    if (activeFilters.length > 0 && !activeFilters.includes(task.type)) {
+      return false
+    }
+
+    return true
   })
 
-  // Obter mapas únicos para o filtro
-  const uniqueMaps = Array.from(new Set(tasks.map((task) => task.map)))
+  // Função para alternar filtros
+  const toggleFilter = (filter: string) => {
+    setActiveFilters((prev) => (prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]))
+  }
+
+  // Limpar todos os filtros
+  const clearFilters = () => {
+    setActiveFilters([])
+    setSearchQuery("")
+  }
+
+  // Ícone baseado no tipo de tarefa
+  const getTaskIcon = (type: string) => {
+    switch (type) {
+      case "Leitura":
+        return <BookOpen className="h-5 w-5 text-blue-500" />
+      case "Vídeo do YouTube":
+        return <Video className="h-5 w-5 text-red-500" />
+      case "Código":
+        return <Code className="h-5 w-5 text-purple-500" />
+      case "NotebookLM":
+        return <FileText className="h-5 w-5 text-teal-500" />
+      case "Curso":
+        return <BookOpen className="h-5 w-5 text-amber-500" />
+      default:
+        return <FileText className="h-5 w-5 text-gray-500" />
+    }
+  }
+
+  // Se o componente não estiver montado (server-side), retorne um estado de carregamento ou nada
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-aoe-bg bg-cover bg-center">
+        <TopMenu activeItem="tasks" />
+        <div className="container mx-auto px-4 py-8 mt-16 flex-1">
+          <AoE4Panel>
+            <div className="aoe4-panel-header">
+              <h2 className="text-xl font-trajan text-aoe-gold">Banco de Tarefas</h2>
+            </div>
+            <div className="p-6 flex justify-center items-center">
+              <p className="text-aoe-light">Carregando tarefas...</p>
+            </div>
+          </AoE4Panel>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="flex flex-col min-h-screen bg-aoe-dark-blue">
+    <div className="flex flex-col min-h-screen bg-aoe-bg bg-cover bg-center">
       <TopMenu activeItem="tasks" />
 
-      <div className="container mx-auto px-4 py-8 mt-16">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-cinzel text-aoe-gold">Suas Tarefas</h1>
-          <div className="flex space-x-2">
-            <button
-              className={`p-2 rounded-md ${
-                viewMode === "list"
-                  ? "bg-aoe-gold text-aoe-dark-blue"
-                  : "bg-aoe-dark-blue text-aoe-light border border-aoe-border"
-              }`}
-              onClick={() => setViewMode("list")}
-              aria-label="Visualização em lista"
-            >
-              <ListIcon className="h-5 w-5" />
-            </button>
-            <button
-              className={`p-2 rounded-md ${
-                viewMode === "map"
-                  ? "bg-aoe-gold text-aoe-dark-blue"
-                  : "bg-aoe-dark-blue text-aoe-light border border-aoe-border"
-              }`}
-              onClick={() => setViewMode("map")}
-              aria-label="Visualização em mapa"
-            >
-              <MapIcon className="h-5 w-5" />
-            </button>
-            <AoE4Button href="/task/new">
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Nova Tarefa
+      <div className="container mx-auto px-4 py-8 mt-16 flex-1">
+        <AoE4Panel>
+          <div className="aoe4-panel-header flex justify-between items-center">
+            <h2 className="text-xl font-trajan text-aoe-gold">Banco de Tarefas</h2>
+            <AoE4Button size="sm" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              <span>Adicionar Nova Tarefa</span>
             </AoE4Button>
           </div>
-        </div>
 
-        <div className="mb-6">
-          <AoE4Panel>
-            <div className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <SearchIcon className="h-5 w-5 text-aoe-muted" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Buscar tarefas..."
-                    className="w-full pl-10 pr-4 py-2 bg-aoe-dark-blue border border-aoe-border rounded-md text-aoe-light focus:outline-none focus:ring-2 focus:ring-aoe-gold/50"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <div className="flex space-x-2">
-                  <div className="relative">
-                    <button className="px-4 py-2 bg-aoe-dark-blue text-aoe-light border border-aoe-border rounded-md hover:bg-aoe-dark-blue/80 flex items-center">
-                      <FilterIcon className="h-4 w-4 mr-2" />
-                      Status: {filter.status === "all" ? "Todos" : filter.status}
-                    </button>
-                    {/* Dropdown para status (simplificado) */}
-                  </div>
-                  <div className="relative">
-                    <button className="px-4 py-2 bg-aoe-dark-blue text-aoe-light border border-aoe-border rounded-md hover:bg-aoe-dark-blue/80 flex items-center">
-                      <FilterIcon className="h-4 w-4 mr-2" />
-                      Prioridade: {filter.priority === "all" ? "Todas" : filter.priority}
-                    </button>
-                    {/* Dropdown para prioridade (simplificado) */}
-                  </div>
-                  <div className="relative">
-                    <button className="px-4 py-2 bg-aoe-dark-blue text-aoe-light border border-aoe-border rounded-md hover:bg-aoe-dark-blue/80 flex items-center">
-                      <FilterIcon className="h-4 w-4 mr-2" />
-                      Mapa: {filter.map === "all" ? "Todos" : filter.map}
-                    </button>
-                    {/* Dropdown para mapa (simplificado) */}
-                  </div>
-                </div>
+          <div className="p-6">
+            {/* Barra de pesquisa e filtros */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-aoe-muted" />
+                <Input
+                  placeholder="Pesquisar tarefas..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 bg-aoe-dark-blue border-aoe-border text-aoe-light"
+                />
+                {searchQuery && (
+                  <button
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-aoe-muted hover:text-aoe-light"
+                    onClick={() => setSearchQuery("")}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-            </div>
-          </AoE4Panel>
-        </div>
 
-        {viewMode === "map" ? (
-          <AoE4Panel>
-            <div className="p-4">
-              <div className="h-[600px] relative">
-                <TaskMap tasks={filteredTasks} />
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <AoE4Button variant="secondary" className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    <span>Filtrar</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </AoE4Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-aoe-dark-blue border-aoe-border">
+                  <DropdownMenuLabel className="text-aoe-light">Filtrar por Tipo</DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-aoe-border" />
+                  <DropdownMenuItem
+                    className={`flex items-center gap-2 cursor-pointer ${activeFilters.includes("Leitura") ? "bg-aoe-gold/20" : ""}`}
+                    onClick={() => toggleFilter("Leitura")}
+                  >
+                    <BookOpen className="h-4 w-4 text-blue-500" />
+                    <span className="text-aoe-light">Leitura</span>
+                    {activeFilters.includes("Leitura") && <CheckCircle className="h-4 w-4 ml-auto text-aoe-gold" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={`flex items-center gap-2 cursor-pointer ${activeFilters.includes("Vídeo do YouTube") ? "bg-aoe-gold/20" : ""}`}
+                    onClick={() => toggleFilter("Vídeo do YouTube")}
+                  >
+                    <Video className="h-4 w-4 text-red-500" />
+                    <span className="text-aoe-light">Vídeo do YouTube</span>
+                    {activeFilters.includes("Vídeo do YouTube") && (
+                      <CheckCircle className="h-4 w-4 ml-auto text-aoe-gold" />
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={`flex items-center gap-2 cursor-pointer ${activeFilters.includes("Código") ? "bg-aoe-gold/20" : ""}`}
+                    onClick={() => toggleFilter("Código")}
+                  >
+                    <Code className="h-4 w-4 text-purple-500" />
+                    <span className="text-aoe-light">Código</span>
+                    {activeFilters.includes("Código") && <CheckCircle className="h-4 w-4 ml-auto text-aoe-gold" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={`flex items-center gap-2 cursor-pointer ${activeFilters.includes("Curso") ? "bg-aoe-gold/20" : ""}`}
+                    onClick={() => toggleFilter("Curso")}
+                  >
+                    <BookOpen className="h-4 w-4 text-amber-500" />
+                    <span className="text-aoe-light">Curso</span>
+                    {activeFilters.includes("Curso") && <CheckCircle className="h-4 w-4 ml-auto text-aoe-gold" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-aoe-border" />
+                  <DropdownMenuItem
+                    className="text-aoe-muted cursor-pointer hover:text-aoe-light"
+                    onClick={clearFilters}
+                  >
+                    Limpar filtros
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-          </AoE4Panel>
-        ) : (
-          <div className="space-y-4">
-            {filteredTasks.map((task) => (
-              <AoE4Panel key={task.id}>
-                <div className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-lg font-cinzel text-aoe-gold">{task.title}</h2>
-                      <p className="text-sm text-aoe-muted">{task.description}</p>
-                      <div className="mt-2 flex items-center text-xs text-aoe-muted">
-                        <MapIcon className="h-3 w-3 mr-1" />
-                        <span>{task.map}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <div
-                        className={`px-2 py-1 rounded-md text-xs ${
-                          task.status === "completed"
-                            ? "bg-green-900/30 text-green-400"
-                            : task.status === "in-progress"
-                              ? "bg-blue-900/30 text-blue-400"
-                              : "bg-gray-900/30 text-gray-400"
-                        }`}
-                      >
-                        {task.status === "completed"
-                          ? "Concluída"
-                          : task.status === "in-progress"
-                            ? "Em Progresso"
-                            : "Não Iniciada"}
-                      </div>
-                      <div
-                        className={`mt-1 px-2 py-1 rounded-md text-xs ${
-                          task.priority === "high"
-                            ? "bg-red-900/30 text-red-400"
-                            : task.priority === "medium"
-                              ? "bg-yellow-900/30 text-yellow-400"
-                              : "bg-green-900/30 text-green-400"
-                        }`}
-                      >
-                        {task.priority === "high"
-                          ? "Alta Prioridade"
-                          : task.priority === "medium"
-                            ? "Média Prioridade"
-                            : "Baixa Prioridade"}
-                      </div>
-                      <div className="mt-1 text-xs text-aoe-muted">
-                        Prazo: {new Date(task.dueDate).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <AoE4Button size="sm" href={`/task/${task.id}`}>
-                      Ver Detalhes
-                    </AoE4Button>
-                  </div>
-                </div>
-              </AoE4Panel>
-            ))}
+
+            {/* Exibição de filtros ativos */}
+            {(activeFilters.length > 0 || searchQuery) && (
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                <div className="text-xs text-aoe-muted">Filtros ativos:</div>
+                {searchQuery && (
+                  <Badge variant="outline" className="gap-1 bg-aoe-dark-blue/50 border-aoe-border">
+                    <Search className="h-3 w-3 text-aoe-gold" />
+                    {searchQuery}
+                    <button className="ml-1" onClick={() => setSearchQuery("")}>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+                {activeFilters.map((filter) => (
+                  <Badge key={filter} variant="outline" className="gap-1 bg-aoe-dark-blue/50 border-aoe-border">
+                    {getTaskIcon(filter)}
+                    {filter}
+                    <button className="ml-1" onClick={() => toggleFilter(filter)}>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+                <button className="text-xs text-aoe-gold hover:text-aoe-gold/80" onClick={clearFilters}>
+                  Limpar todos
+                </button>
+              </div>
+            )}
+
+            {/* Tabela de tarefas */}
+            <div className="rounded-lg border border-aoe-border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-aoe-border bg-aoe-dark-blue/70">
+                    <th className="text-left p-3 font-medium text-aoe-gold">Título</th>
+                    <th className="text-left p-3 font-medium text-aoe-gold">Tipo</th>
+                    <th className="text-left p-3 font-medium text-aoe-gold">Dificuldade</th>
+                    <th className="text-center p-3 font-medium text-aoe-gold">Pontos</th>
+                    <th className="text-left p-3 font-medium text-aoe-gold">Validação</th>
+                    <th className="text-center p-3 font-medium text-aoe-gold">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTasks.map((task) => (
+                    <tr key={task.id} className="border-b border-aoe-border hover:bg-aoe-dark-blue/50">
+                      <td className="p-3">
+                        <div className="font-medium text-aoe-light">{task.title}</div>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          {getTaskIcon(task.type)}
+                          <span className="text-aoe-muted">{task.type}</span>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <div
+                          className={`text-xs px-2 py-0.5 rounded-full w-fit ${
+                            task.difficulty === "Fácil"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : task.difficulty === "Médio"
+                                ? "bg-purple-500/20 text-purple-400"
+                                : "bg-red-500/20 text-red-400"
+                          }`}
+                        >
+                          {task.difficulty}
+                        </div>
+                      </td>
+                      <td className="p-3 text-center">
+                        <div className="text-aoe-gold font-medium">{task.points}</div>
+                      </td>
+                      <td className="p-3 text-aoe-muted">{task.validation}</td>
+                      <td className="p-3">
+                        <div className="flex justify-center gap-2">
+                          <button className="text-aoe-muted hover:text-aoe-light">
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button className="text-aoe-muted hover:text-aoe-red">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {filteredTasks.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-aoe-muted">
+                        Nenhuma tarefa encontrada. Tente ajustar sua pesquisa ou adicione uma nova tarefa.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
+        </AoE4Panel>
       </div>
     </div>
   )

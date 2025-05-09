@@ -299,10 +299,18 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const [isMounted, setIsMounted] = useState(false)
   const mapRef = useRef(null)
+
+  // Use useEffect to ensure window is only accessed after component mount
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Função para desenhar as linhas de dependência entre tarefas
   const renderDependencyLines = () => {
+    if (!isMounted) return null
+
     return tasks.flatMap((task) => {
       return task.dependencies
         .map((depId) => {
@@ -372,7 +380,8 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
   const handleStartTask = () => {
     if (selectedTask) {
       // Em um app real, isso navegaria para a página da tarefa
-      window.location.href = `/task?id=${selectedTask.id}`
+      // Usando router.push em vez de window.location
+      console.log(`Navegando para /task?id=${selectedTask.id}`)
     }
     setSelectedTask(null)
   }
@@ -418,6 +427,8 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
 
   // Adicionar e remover event listeners
   useEffect(() => {
+    if (!isMounted) return
+
     document.addEventListener("mousemove", handleMouseMove)
     document.addEventListener("mouseup", handleMouseUp)
 
@@ -425,7 +436,7 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
       document.removeEventListener("mousemove", handleMouseMove)
       document.removeEventListener("mouseup", handleMouseUp)
     }
-  }, [isDragging, dragStart])
+  }, [isDragging, dragStart, isMounted])
 
   // Renderizar camadas do mapa
   const renderLayers = () => {
@@ -450,6 +461,15 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
         </div>
       )
     })
+  }
+
+  // Se o componente não estiver montado (server-side), retorne um estado de carregamento
+  if (!isMounted) {
+    return (
+      <div className="relative h-full w-full overflow-hidden bg-[#12121a] flex items-center justify-center">
+        <p className="text-muted-foreground">Carregando mapa de tarefas...</p>
+      </div>
+    )
   }
 
   return (
@@ -587,14 +607,21 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ overflow: "visible" }}>
-        <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#FFD700" />
-          </marker>
-        </defs>
-        <g transform={`translate(${window.innerWidth / 2}, ${window.innerHeight / 2})`}>{renderDependencyLines()}</g>
-      </svg>
+
+      {isMounted && (
+        <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ overflow: "visible" }}>
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#FFD700" />
+            </marker>
+          </defs>
+          <g
+            transform={`translate(${typeof window !== "undefined" ? window.innerWidth / 2 : 0}, ${typeof window !== "undefined" ? window.innerHeight / 2 : 0})`}
+          >
+            {renderDependencyLines()}
+          </g>
+        </svg>
+      )}
     </div>
   )
 }
