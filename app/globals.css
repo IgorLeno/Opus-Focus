@@ -331,3 +331,26 @@ svg,
   color: var(--aoe-gold);
   border: 1px solid var(--aoe-border);
 }
+
+/* Add this to the end of the file to ensure no white backgrounds */
+.bg-white {
+  background-color: transparent !important;
+}
+
+/* Fix any potential white backgrounds */
+* {
+  background-color: transparent;
+}
+
+/* Ensure proper text color on gold buttons */
+.bg-aoe-gold,
+button.bg-aoe-gold,
+a.bg-aoe-gold {
+  color: #0a1929 !important;
+}
+
+.bg-aoe-gold span,
+button.bg-aoe-gold span,
+a.bg-aoe-gold span {
+  color: #0a1929 !important;
+}

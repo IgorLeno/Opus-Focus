@@ -20,7 +20,7 @@ export function AoE4Button({
   const baseStyles = cn(
     "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aoe-gold focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
     {
-      "bg-aoe-gold hover:bg-aoe-gold/90 text-aoe-dark-blue": variant === "primary",
+      "bg-aoe-gold hover:bg-aoe-gold/90 text-[#0a1929] font-bold": variant === "primary", // Dark text on gold background
       "bg-aoe-button hover:bg-aoe-button-hover text-aoe-light border border-aoe-border": variant === "secondary",
       "border border-aoe-gold bg-transparent hover:bg-aoe-gold/10 text-aoe-gold": variant === "outline",
       "bg-transparent hover:bg-aoe-dark-blue/50 text-aoe-light": variant === "ghost",
@@ -35,14 +35,14 @@ export function AoE4Button({
   if (href) {
     return (
       <Link href={href} className={baseStyles}>
-        {children}
+        <span className="z-10 relative text-current">{children}</span>
       </Link>
     )
   }
 
   return (
     <button className={baseStyles} {...props}>
-      {children}
+      <span className="z-10 relative text-current">{children}</span>
     </button>
   )
 }

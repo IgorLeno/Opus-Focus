@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link"
 import Image from "next/image"
-import { Settings, BarChart2, ShoppingBag } from "lucide-react"
+import { Settings, BarChart2, ShoppingBag } from 'lucide-react'
 
 interface TopMenuProps {
   activeItem: string
@@ -25,7 +25,7 @@ export function TopMenu({ activeItem }: TopMenuProps) {
               </div>
 
               <nav className="hidden md:flex items-center space-x-1">
-                <Link href="/headquarters" className={`aoe4-menu-item ${activeItem === "qg" ? "active" : ""}`}>
+                <Link href="/qg" className={`aoe4-menu-item ${activeItem === "qg" ? "active" : ""}`}>
                   QG
                 </Link>
                 <Link href="/maps" className={`aoe4-menu-item ${activeItem === "maps" ? "active" : ""}`}>

@@ -17,7 +17,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   const isActive = (path: string) => {
-    return pathname === path || (path === "/qg" && pathname === "/")
+    return pathname === path
   }
 
   return (
