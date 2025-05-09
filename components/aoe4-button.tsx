@@ -1,39 +1,51 @@
 import type React from "react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Slot } from "@radix-ui/react-slot"
 
 interface AoE4ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "outline" | "ghost"
+  size?: "default" | "sm" | "lg" | "icon"
+  href?: string
   children: React.ReactNode
-  variant?: "primary" | "secondary"
-  size?: "default" | "sm" | "lg"
-  asChild?: boolean
 }
 
 export function AoE4Button({
-  children,
-  className,
   variant = "primary",
   size = "default",
-  asChild = false,
+  href,
+  className,
+  children,
   ...props
 }: AoE4ButtonProps) {
-  const Comp = asChild ? Slot : "button"
+  const baseStyles = cn(
+    "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aoe-gold focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
+    {
+      "bg-aoe-gold hover:bg-aoe-gold/90 text-aoe-dark-blue": variant === "primary",
+      "bg-aoe-button hover:bg-aoe-button-hover text-aoe-light border border-aoe-border": variant === "secondary",
+      "border border-aoe-gold bg-transparent hover:bg-aoe-gold/10 text-aoe-gold": variant === "outline",
+      "bg-transparent hover:bg-aoe-dark-blue/50 text-aoe-light": variant === "ghost",
+      "h-10 px-4 py-2 rounded-md text-sm": size === "default",
+      "h-8 px-3 py-1 rounded-md text-xs": size === "sm",
+      "h-12 px-6 py-3 rounded-md text-base": size === "lg",
+      "h-10 w-10 rounded-full p-0": size === "icon",
+    },
+    className,
+  )
+
+  if (href) {
+    return (
+      <Link href={href} className={baseStyles}>
+        {children}
+      </Link>
+    )
+  }
 
   return (
-    <Comp
-      className={cn(
-        "aoe4-button relative inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-aoe-gold disabled:pointer-events-none disabled:opacity-50",
-        variant === "primary"
-          ? "bg-aoe-button text-aoe-light border border-aoe-gold/50 hover:bg-aoe-button-hover"
-          : "bg-aoe-dark-blue text-aoe-light border border-aoe-border hover:bg-aoe-dark-blue/80",
-        size === "default" && "h-9 px-4 py-2 text-sm",
-        size === "sm" && "h-7 px-3 text-xs",
-        size === "lg" && "h-10 px-6 text-base",
-        className,
-      )}
-      {...props}
-    >
+    <button className={baseStyles} {...props}>
       {children}
-    </Comp>
+    </button>
   )
 }
+
+// Add the alternative export name to support both naming conventions
+export const Aoe4Button = AoE4Button

@@ -19,7 +19,7 @@ export default function SettingsPage() {
   const [achievementNotifications, setAchievementNotifications] = useState(true)
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <TopMenu activeItem="settings" />
 
       <div className="container mx-auto px-4 py-8 mt-16 flex-1">
@@ -34,9 +34,7 @@ export default function SettingsPage() {
                 <nav className="space-y-1">
                   <button
                     className={`w-full text-left px-3 py-2 rounded-sm flex items-center ${
-                      activeTab === "general"
-                        ? "bg-aoe-gold/20 text-aoe-gold"
-                        : "text-aoe-light hover:bg-aoe-dark-blue"
+                      activeTab === "general" ? "bg-aoe-gold/20 text-aoe-gold" : "text-aoe-light hover:bg-aoe-dark-blue"
                     }`}
                     onClick={() => setActiveTab("general")}
                   >
@@ -67,9 +65,7 @@ export default function SettingsPage() {
                   </button>
                   <button
                     className={`w-full text-left px-3 py-2 rounded-sm flex items-center ${
-                      activeTab === "account"
-                        ? "bg-aoe-gold/20 text-aoe-gold"
-                        : "text-aoe-light hover:bg-aoe-dark-blue"
+                      activeTab === "account" ? "bg-aoe-gold/20 text-aoe-gold" : "text-aoe-light hover:bg-aoe-dark-blue"
                     }`}
                     onClick={() => setActiveTab("account")}
                   >
@@ -191,9 +187,7 @@ export default function SettingsPage() {
                           <div className="flex justify-between items-center">
                             <div>
                               <label className="text-sm text-aoe-light">Efeitos Sonoros</label>
-                              <p className="text-xs text-aoe-muted mt-1">
-                                Reproduzir sons para ações e notificações
-                              </p>
+                              <p className="text-xs text-aoe-muted mt-1">Reproduzir sons para ações e notificações</p>
                             </div>
                             <div className="flex items-center">
                               <VolumeX className="h-4 w-4 text-aoe-muted mr-2" />
@@ -271,4 +265,210 @@ export default function SettingsPage() {
                 </>
               )}
 
-              { /* Configur
+              {/* Configurações de Notificações */}
+              {activeTab === "notifications" && (
+                <>
+                  <div className="aoe4-panel-header">
+                    <h2 className="text-xl font-trajan text-aoe-gold">Notificações</h2>
+                  </div>
+                  <div className="p-6">
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-medium text-aoe-light mb-4">Lembretes</h3>
+                        <div className="bg-aoe-dark-blue border border-aoe-border rounded-md p-4 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Lembrete Diário</label>
+                              <p className="text-xs text-aoe-muted mt-1">
+                                Receber um lembrete diário para completar tarefas
+                              </p>
+                            </div>
+                            <Switch checked={dailyReminder} onCheckedChange={setDailyReminder} />
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <label className="text-sm text-aoe-light">Horário do Lembrete</label>
+                            <select
+                              className="bg-aoe-panel border border-aoe-border text-aoe-light rounded-sm px-3 py-1 text-sm"
+                              disabled={!dailyReminder}
+                            >
+                              <option value="morning">09:00</option>
+                              <option value="noon">12:00</option>
+                              <option value="afternoon">15:00</option>
+                              <option value="evening">18:00</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-medium text-aoe-light mb-4">Alertas</h3>
+                        <div className="bg-aoe-dark-blue border border-aoe-border rounded-md p-4 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Notificações de Tarefas</label>
+                              <p className="text-xs text-aoe-muted mt-1">
+                                Receber notificações sobre prazos de tarefas
+                              </p>
+                            </div>
+                            <Switch checked={taskNotifications} onCheckedChange={setTaskNotifications} />
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Notificações de Conquistas</label>
+                              <p className="text-xs text-aoe-muted mt-1">
+                                Receber notificações quando desbloquear conquistas
+                              </p>
+                            </div>
+                            <Switch checked={achievementNotifications} onCheckedChange={setAchievementNotifications} />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-medium text-aoe-light mb-4">Canais de Notificação</h3>
+                        <div className="bg-aoe-dark-blue border border-aoe-border rounded-md p-4 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Notificações no Aplicativo</label>
+                              <p className="text-xs text-aoe-muted mt-1">Mostrar notificações dentro do aplicativo</p>
+                            </div>
+                            <Switch checked={true} />
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Notificações do Sistema</label>
+                              <p className="text-xs text-aoe-muted mt-1">Mostrar notificações do sistema operacional</p>
+                            </div>
+                            <Switch checked={true} />
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Notificações por E-mail</label>
+                              <p className="text-xs text-aoe-muted mt-1">Receber notificações por e-mail</p>
+                            </div>
+                            <Switch checked={false} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex justify-end">
+                      <AoE4Button>Salvar Alterações</AoE4Button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Configurações de Conta */}
+              {activeTab === "account" && (
+                <>
+                  <div className="aoe4-panel-header">
+                    <h2 className="text-xl font-trajan text-aoe-gold">Conta</h2>
+                  </div>
+                  <div className="p-6">
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-medium text-aoe-light mb-4">Perfil</h3>
+                        <div className="bg-aoe-dark-blue border border-aoe-border rounded-md p-4 space-y-4">
+                          <div className="flex flex-col md:flex-row md:items-center gap-4">
+                            <div className="w-20 h-20 rounded-full bg-aoe-panel border-2 border-aoe-gold flex items-center justify-center">
+                              <User className="w-10 h-10 text-aoe-gold" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="space-y-3">
+                                <div>
+                                  <label className="text-sm text-aoe-light block mb-1">Nome de Usuário</label>
+                                  <input
+                                    type="text"
+                                    value="Comandante"
+                                    className="w-full bg-aoe-panel border border-aoe-border text-aoe-light rounded-sm px-3 py-2"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm text-aoe-light block mb-1">E-mail</label>
+                                  <input
+                                    type="email"
+                                    value="usuario@exemplo.com"
+                                    className="w-full bg-aoe-panel border border-aoe-border text-aoe-light rounded-sm px-3 py-2"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-medium text-aoe-light mb-4">Segurança</h3>
+                        <div className="bg-aoe-dark-blue border border-aoe-border rounded-md p-4 space-y-4">
+                          <div>
+                            <label className="text-sm text-aoe-light block mb-1">Senha Atual</label>
+                            <input
+                              type="password"
+                              placeholder="••••••••"
+                              className="w-full bg-aoe-panel border border-aoe-border text-aoe-light rounded-sm px-3 py-2"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm text-aoe-light block mb-1">Nova Senha</label>
+                            <input
+                              type="password"
+                              placeholder="••••••••"
+                              className="w-full bg-aoe-panel border border-aoe-border text-aoe-light rounded-sm px-3 py-2"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm text-aoe-light block mb-1">Confirmar Nova Senha</label>
+                            <input
+                              type="password"
+                              placeholder="••••••••"
+                              className="w-full bg-aoe-panel border border-aoe-border text-aoe-light rounded-sm px-3 py-2"
+                            />
+                          </div>
+                          <div className="pt-2">
+                            <AoE4Button>Alterar Senha</AoE4Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-medium text-aoe-light mb-4">Dados</h3>
+                        <div className="bg-aoe-dark-blue border border-aoe-border rounded-md p-4 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Exportar Dados</label>
+                              <p className="text-xs text-aoe-muted mt-1">Baixar todos os seus dados em formato JSON</p>
+                            </div>
+                            <AoE4Button>Exportar</AoE4Button>
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <label className="text-sm text-aoe-light">Excluir Conta</label>
+                              <p className="text-xs text-aoe-muted mt-1">
+                                Excluir permanentemente sua conta e todos os dados
+                              </p>
+                            </div>
+                            <AoE4Button variant="destructive">Excluir</AoE4Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex justify-end">
+                      <AoE4Button>Salvar Alterações</AoE4Button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </AoE4Panel>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

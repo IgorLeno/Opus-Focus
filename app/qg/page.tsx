@@ -30,25 +30,25 @@ const activeMaps = [
   {
     id: 1,
     name: "Projeto Final",
-    progress: 45,
+    progress: 65,
     tasks: 10,
-    completedTasks: 4,
+    completedTasks: 6,
     lastActivity: "Hoje",
   },
   {
     id: 2,
-    name: "Aprendizado de Inglês",
-    progress: 30,
+    name: "Domínio Estratégico",
+    progress: 42,
     tasks: 20,
-    completedTasks: 6,
+    completedTasks: 8,
     lastActivity: "Ontem",
   },
   {
     id: 3,
-    name: "Planejamento Financeiro",
-    progress: 25,
+    name: "Fronteiras do Reino",
+    progress: 78,
     tasks: 8,
-    completedTasks: 2,
+    completedTasks: 6,
     lastActivity: "3 dias atrás",
   },
 ]
@@ -73,7 +73,7 @@ export default function QGPage() {
   const [selectedMap, setSelectedMap] = useState(activeMaps[0])
 
   return (
-    <main className="flex flex-col min-h-screen bg-aoe-bg bg-cover bg-center">
+    <div className="flex flex-col min-h-screen bg-aoe-dark-blue">
       <TopMenu activeItem="qg" />
 
       <div className="container mx-auto px-4 py-8 mt-16 flex-1">
@@ -82,7 +82,7 @@ export default function QGPage() {
           <div className="lg:col-span-4">
             <AoE4Panel>
               <div className="aoe4-panel-header">
-                <h2 className="text-xl font-trajan text-aoe-gold">Mapas Ativos</h2>
+                <h2 className="text-xl font-cinzel text-aoe-gold">Mapas Ativos</h2>
               </div>
               <div className="p-4">
                 <div className="space-y-4">
@@ -130,7 +130,7 @@ export default function QGPage() {
           <div className="lg:col-span-5">
             <AoE4Panel>
               <div className="aoe4-panel-header flex justify-between items-center">
-                <h2 className="text-xl font-trajan text-aoe-gold">Mapa do Dia</h2>
+                <h2 className="text-xl font-cinzel text-aoe-gold">Mapa do Dia</h2>
                 <div className="flex items-center text-aoe-light text-sm">
                   <Clock className="h-4 w-4 mr-1" />
                   <span>Restante: 4h 15m</span>
@@ -139,7 +139,9 @@ export default function QGPage() {
 
               <div className="p-4">
                 <div className="relative h-[200px] border-2 border-aoe-border rounded-md overflow-hidden mb-4">
-                  <div className="absolute inset-0 bg-aoe-map-bg"></div>
+                  <div className="absolute inset-0 bg-aoe-dark-blue">
+                    <div className="absolute inset-0 bg-[url('/images/aoe4/map-background.jpg')] bg-cover bg-center opacity-30"></div>
+                  </div>
 
                   {/* Representação visual simplificada do mapa */}
                   <div className="absolute inset-0 p-4">
@@ -213,7 +215,7 @@ export default function QGPage() {
             {/* Missões Diárias */}
             <AoE4Panel className="mt-6">
               <div className="aoe4-panel-header">
-                <h2 className="text-xl font-trajan text-aoe-gold">Missões Diárias</h2>
+                <h2 className="text-xl font-cinzel text-aoe-gold">Missões Diárias</h2>
               </div>
               <div className="p-4">
                 <div className="space-y-4">
@@ -255,7 +257,7 @@ export default function QGPage() {
           <div className="lg:col-span-3">
             <AoE4Panel>
               <div className="aoe4-panel-header">
-                <h2 className="text-xl font-trajan text-aoe-gold">Atualizações</h2>
+                <h2 className="text-xl font-cinzel text-aoe-gold">Atualizações</h2>
               </div>
               <div className="p-4">
                 <div className="space-y-4">
@@ -273,7 +275,7 @@ export default function QGPage() {
             {/* Resumo de Estatísticas */}
             <AoE4Panel className="mt-6">
               <div className="aoe4-panel-header">
-                <h2 className="text-xl font-trajan text-aoe-gold">Resumo</h2>
+                <h2 className="text-xl font-cinzel text-aoe-gold">Resumo</h2>
               </div>
               <div className="p-4">
                 <div className="space-y-4">
@@ -329,6 +331,6 @@ export default function QGPage() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

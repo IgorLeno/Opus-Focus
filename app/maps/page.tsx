@@ -4,224 +4,182 @@ import { useState } from "react"
 import { TopMenu } from "@/components/top-menu"
 import { AoE4Panel } from "@/components/aoe4-panel"
 import { AoE4Button } from "@/components/aoe4-button"
-import { Input } from "@/components/ui/input"
-import { Plus, Search, Filter, ChevronDown, Star, CheckCircle, X } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { MapIcon, CalendarIcon, ClockIcon, PlusIcon, SearchIcon } from "lucide-react"
 
-// Tipos para os mapas
-interface Map {
-  id: string
-  name: string
-  description: string
-  status: "active" | "completed" | "inactive"
-  progress: number
-  theme: string
-  totalTasks: number
-  completedTasks: number
-  createdAt: string
-  completedAt?: string
-  sector: string
-  deadline?: string
-  collaborators?: number
-}
-
-// Dados de exemplo para os setores
-const sectors = [
-  { id: "sector1", name: "Trabalho" },
-  { id: "sector2", name: "Estudos" },
-  { id: "sector3", name: "Projetos Pessoais" },
-  { id: "sector4", name: "Não Categorizado" },
-  { id: "sector5", name: "Arquivados" },
-]
-
-// Dados de exemplo para os mapas
-const sampleMaps: Map[] = [
+// Dados de exemplo para mapas
+const maps = [
   {
-    id: "map1",
+    id: 1,
     name: "Projeto Final",
-    description: "Desenvolvimento do projeto de conclusão de curso",
-    status: "active",
-    progress: 45,
-    theme: "space",
-    totalTasks: 10,
-    completedTasks: 4,
-    createdAt: "2025-04-15",
-    sector: "sector1",
-    deadline: "2025-05-30",
-    collaborators: 2,
-  },
-  {
-    id: "map2",
-    name: "Curso de React",
-    description: "Aprendizado completo de React e seus hooks",
-    status: "completed",
-    progress: 100,
-    theme: "tech",
-    totalTasks: 12,
-    completedTasks: 12,
-    createdAt: "2025-03-10",
-    completedAt: "2025-04-05",
-    sector: "sector2",
-  },
-  {
-    id: "map3",
-    name: "Aprendizado de Inglês",
-    description: "Estudo diário para aprimorar o inglês",
-    status: "inactive",
-    progress: 30,
-    theme: "forest",
-    totalTasks: 20,
+    description: "Mapa para gerenciar as tarefas do projeto final do semestre",
+    progress: 65,
+    tasks: 10,
     completedTasks: 6,
-    createdAt: "2025-04-01",
-    sector: "sector2",
-    deadline: "2025-12-31",
+    lastActivity: "Hoje",
+    createdAt: "10/04/2025",
   },
   {
-    id: "map4",
-    name: "Preparação para Certificação",
-    description: "Estudos para certificação profissional",
-    status: "inactive",
-    progress: 15,
-    theme: "space",
-    totalTasks: 8,
-    completedTasks: 1,
-    createdAt: "2025-04-10",
-    sector: "sector2",
-    deadline: "2025-06-15",
+    id: 2,
+    name: "Aprendizado de Inglês",
+    description: "Mapa para acompanhar o progresso no curso de inglês",
+    progress: 42,
+    tasks: 20,
+    completedTasks: 8,
+    lastActivity: "Ontem",
+    createdAt: "05/03/2025",
   },
   {
-    id: "map5",
-    name: "Leitura de Livros",
-    description: "Meta de leitura anual",
-    status: "completed",
-    progress: 100,
-    theme: "forest",
-    totalTasks: 15,
-    completedTasks: 15,
-    createdAt: "2025-02-20",
-    completedAt: "2025-03-25",
-    sector: "sector3",
+    id: 3,
+    name: "Planejamento Financeiro",
+    description: "Mapa para organizar e acompanhar metas financeiras",
+    progress: 78,
+    tasks: 8,
+    completedTasks: 6,
+    lastActivity: "3 dias atrás",
+    createdAt: "15/02/2025",
   },
   {
-    id: "map6",
-    name: "Projeto Pessoal",
-    description: "Desenvolvimento de aplicativo pessoal",
-    status: "inactive",
-    progress: 60,
-    theme: "tech",
-    totalTasks: 20,
-    completedTasks: 12,
-    createdAt: "2025-03-15",
-    sector: "sector3",
-    deadline: "2025-07-01",
-    collaborators: 1,
+    id: 4,
+    name: "Hábitos Saudáveis",
+    description: "Mapa para desenvolver e manter hábitos saudáveis",
+    progress: 30,
+    tasks: 15,
+    completedTasks: 4,
+    lastActivity: "1 semana atrás",
+    createdAt: "20/01/2025",
   },
 ]
 
 export default function MapsPage() {
-  const [maps, setMaps] = useState<Map[]>(sampleMaps)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [activeFilters, setActiveFilters] = useState<string[]>([])
-  const [sectorFilter, setSectorFilter] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filter, setFilter] = useState("all") // all, active, completed
 
-  // Filtrar mapas com base na pesquisa e filtros
+  // Filtrar mapas com base no termo de pesquisa e filtro
   const filteredMaps = maps.filter((map) => {
-    // Filtrar por pesquisa
-    if (searchQuery && !map.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
+    const matchesSearch = map.name.toLowerCase().includes(searchTerm.toLowerCase())
 
-    // Filtrar por status
-    if (activeFilters.length > 0 && !activeFilters.includes(map.status)) {
-      return false
-    }
+    if (filter === "all") return matchesSearch
+    if (filter === "active") return matchesSearch && map.progress < 100
+    if (filter === "completed") return matchesSearch && map.progress === 100
 
-    // Filtrar por setor
-    if (sectorFilter && map.sector !== sectorFilter) {
-      return false
-    }
-
-    return true
+    return matchesSearch
   })
 
-  // Função para alternar filtros
-  const toggleFilter = (filter: string) => {
-    setActiveFilters((prev) => (prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]))
-  }
-
-  // Limpar todos os filtros
-  const clearFilters = () => {
-    setActiveFilters([])
-    setSearchQuery("")
-    setSectorFilter(null)
-  }
-
-  // Obter nome do setor
-  const getSectorName = (sectorId: string) => {
-    return sectors.find((s) => s.id === sectorId)?.name || "Desconhecido"
-  }
-
   return (
-    <main className="flex flex-col min-h-screen bg-aoe-bg bg-cover bg-center">
+    <div className="flex flex-col min-h-screen bg-aoe-dark-blue">
       <TopMenu activeItem="maps" />
 
-      <div className="container mx-auto px-4 py-8 mt-16 flex-1">
-        <AoE4Panel>
-          <div className="aoe4-panel-header flex justify-between items-center">
-            <h2 className="text-xl font-trajan text-aoe-gold">Mapas de Conquista</h2>
-            <AoE4Button size="sm" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              <span>Criar Novo Mapa</span>
-            </AoE4Button>
-          </div>
+      <div className="container mx-auto px-4 py-8 mt-16">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-cinzel text-aoe-gold">Seus Mapas de Conquista</h1>
+          <AoE4Button href="/create-map">
+            <PlusIcon className="h-4 w-4 mr-2" />
+            Novo Mapa
+          </AoE4Button>
+        </div>
 
-          <div className="p-6">
-            {/* Barra de pesquisa e filtros */}
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-aoe-muted" />
-                <Input
-                  placeholder="Pesquisar mapas..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 bg-aoe-dark-blue border-aoe-border text-aoe-light"
-                />
-                {searchQuery && (
+        <div className="mb-6">
+          <AoE4Panel>
+            <div className="p-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <SearchIcon className="h-5 w-5 text-aoe-muted" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar mapas..."
+                    className="w-full pl-10 pr-4 py-2 bg-aoe-dark-blue border border-aoe-border rounded-md text-aoe-light focus:outline-none focus:ring-2 focus:ring-aoe-gold/50"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="flex space-x-2">
                   <button
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-aoe-muted hover:text-aoe-light"
-                    onClick={() => setSearchQuery("")}
+                    className={`px-4 py-2 rounded-md ${
+                      filter === "all"
+                        ? "bg-aoe-gold text-aoe-dark-blue"
+                        : "bg-aoe-dark-blue text-aoe-light border border-aoe-border hover:bg-aoe-dark-blue/80"
+                    }`}
+                    onClick={() => setFilter("all")}
                   >
-                    <X className="h-4 w-4" />
+                    Todos
                   </button>
-                )}
-              </div>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <AoE4Button variant="secondary" className="flex items-center gap-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Status</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </AoE4Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-aoe-dark-blue border-aoe-border">
-                  <DropdownMenuLabel className="text-aoe-light">Filtrar por Status</DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-aoe-border" />
-                  <DropdownMenuItem
-                    className={`flex items-center gap-2 cursor-pointer ${activeFilters.includes("active") ? "bg-aoe-gold/20" : ""}`}
-                    onClick={() => toggleFilter("active")}
+                  <button
+                    className={`px-4 py-2 rounded-md ${
+                      filter === "active"
+                        ? "bg-aoe-gold text-aoe-dark-blue"
+                        : "bg-aoe-dark-blue text-aoe-light border border-aoe-border hover:bg-aoe-dark-blue/80"
+                    }`}
+                    onClick={() => setFilter("active")}
                   >
-                    <Star className="h-4 w-4 text-aoe-gold" />
-                    <span className="text-aoe-light">Ativos</span>
-                    {activeFilters.includes("active") && <CheckCircle className="h-4 w-4 ml-auto text-aoe-gold" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className={`flex items-center gap-2 cursor-pointer ${activeFilters.includes("completed") ? "bg-aoe-gold/20" : ""}`}
-\
+                    Em Progresso
+                  </button>
+                  <button
+                    className={`px-4 py-2 rounded-md ${
+                      filter === "completed"
+                        ? "bg-aoe-gold text-aoe-dark-blue"
+                        : "bg-aoe-dark-blue text-aoe-light border border-aoe-border hover:bg-aoe-dark-blue/80"
+                    }`}
+                    onClick={() => setFilter("completed")}
+                  >
+                    Concluídos
+                  </button>
+                </div>
+              </div>
+            </div>
+          </AoE4Panel>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredMaps.map((map) => (
+            <AoE4Panel key={map.id} className="h-full">
+              <div className="p-4 flex flex-col h-full">
+                <div className="flex items-start justify-between mb-2">
+                  <h2 className="text-xl font-cinzel text-aoe-gold">{map.name}</h2>
+                  <div className="flex items-center text-xs text-aoe-muted">
+                    <CalendarIcon className="h-3 w-3 mr-1" />
+                    <span>{map.createdAt}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-aoe-muted mb-4">{map.description}</p>
+
+                <div className="space-y-3 mb-4 flex-grow">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-aoe-muted">Progresso</span>
+                    <span className="text-aoe-gold">{map.progress}%</span>
+                  </div>
+                  <div className="h-1.5 bg-aoe-dark-blue rounded-sm overflow-hidden">
+                    <div className="h-full bg-aoe-gold" style={{ width: `${map.progress}%` }}></div>
+                  </div>
+
+                  <div className="flex justify-between text-xs">
+                    <div className="flex items-center text-aoe-muted">
+                      <MapIcon className="h-3 w-3 mr-1" />
+                      <span>
+                        {map.completedTasks}/{map.tasks} tarefas
+                      </span>
+                    </div>
+                    <div className="flex items-center text-aoe-muted">
+                      <ClockIcon className="h-3 w-3 mr-1" />
+                      <span>{map.lastActivity}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between">
+                  <AoE4Button variant="secondary" size="sm" href={`/map/${map.id}`}>
+                    Visualizar
+                  </AoE4Button>
+                  <AoE4Button size="sm" href={`/war-room?map=${map.id}`}>
+                    Conquistar
+                  </AoE4Button>
+                </div>
+              </div>
+            </AoE4Panel>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}

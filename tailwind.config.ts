@@ -21,6 +21,7 @@ const config = {
     extend: {
       fontFamily: {
         cinzel: ["var(--font-cinzel)"],
+        medieval: ["var(--font-medieval-sharp)"],
       },
       colors: {
         border: "hsl(var(--border))",
