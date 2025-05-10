@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
 import { Settings, BarChart2, ShoppingBag } from "lucide-react"
+import { SoundControls } from "@/components/sound-controls"
 
 interface TopMenuProps {
   activeItem: string
@@ -38,6 +39,9 @@ export function TopMenu({ activeItem }: TopMenuProps) {
             </div>
 
             <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
+                <SoundControls />
+              </div>
               <Link href="/stats" className="aoe4-icon-button">
                 <BarChart2 className="h-5 w-5" />
               </Link>

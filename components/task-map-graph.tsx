@@ -301,6 +301,42 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [isMounted, setIsMounted] = useState(false)
   const mapRef = useRef(null)
+  const [connections, setConnections] = useState<Array<{ from: Task; to: Task; completed: boolean }>>([])
+
+  // Gerar conexões com base nas dependências das tarefas
+  useEffect(() => {
+    const newConnections: Array<{ from: Task; to: Task; completed: boolean }> = []
+
+    tasks.forEach((task) => {
+      if (task.dependencies) {
+        task.dependencies.forEach((depId) => {
+          const dependencyTask = tasks.find((t) => t.id === depId)
+          if (dependencyTask) {
+            newConnections.push({
+              from: dependencyTask,
+              to: task,
+              completed: dependencyTask.status === "completed" && task.status === "completed",
+            })
+          }
+        })
+      }
+    })
+
+    setConnections(newConnections)
+  }, [tasks])
+
+  // Gerar um caminho curvo entre dois pontos
+  const generateCurvedPath = (from: { x: number; y: number }, to: { x: number; y: number }) => {
+    // Calcular ponto de controle para a curva
+    const midX = (from.x + to.x) / 2
+    const midY = (from.y + to.y) / 2
+
+    // Adicionar um deslocamento aleatório para evitar que as linhas se sobreponham
+    const offsetX = (Math.random() - 0.5) * 50
+    const offsetY = (Math.random() - 0.5) * 50
+
+    return `M ${from.x} ${from.y} Q ${midX + offsetX} ${midY + offsetY} ${to.x} ${to.y}`
+  }
 
   // Use useEffect to ensure window is only accessed after component mount
   useEffect(() => {
@@ -553,7 +589,7 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
         {renderLayers()}
 
         {/* Conexões entre tarefas */}
-        <TaskConnections tasks={initialTasks} connections={initialConnections} />
+        {/*<TaskConnections tasks={initialTasks} connections={initialConnections} />*/}
 
         {/* Nós de tarefas */}
         {initialTasks.map((task) => (
@@ -608,7 +644,7 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
         </DialogContent>
       </Dialog>
 
-      {isMounted && (
+      {/*{isMounted && (
         <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ overflow: "visible" }}>
           <defs>
             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -621,7 +657,94 @@ export function TaskMapGraph({ tasks }: TaskMapGraphProps) {
             {renderDependencyLines()}
           </g>
         </svg>
-      )}
+      )}*/}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+        <defs>
+          <linearGradient id="completedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.8" />
+          </linearGradient>
+
+          <linearGradient id="pendingGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#6b7280" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.5" />
+          </linearGradient>
+
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+
+          <marker
+            id="arrowCompleted"
+            viewBox="0 0 10 10"
+            refX="5"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" />
+          </marker>
+
+          <marker
+            id="arrowPending"
+            viewBox="0 0 10 10"
+            refX="5"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6b7280" />
+          </marker>
+        </defs>
+
+        {/* Conexões entre tarefas */}
+        {connections.map((connection, index) => {
+          const fromPos = {
+            x: connection.from.x + position.x + (mapRef.current ? mapRef.current.offsetWidth / 2 : 0),
+            y: connection.from.y + position.y + (mapRef.current ? mapRef.current.offsetHeight / 2 : 0),
+          }
+
+          const toPos = {
+            x: connection.to.x + position.x + (mapRef.current ? mapRef.current.offsetWidth / 2 : 0),
+            y: connection.to.y + position.y + (mapRef.current ? mapRef.current.offsetHeight / 2 : 0),
+          }
+
+          const path = generateCurvedPath(fromPos, toPos)
+          const isActive = connection.from.status === "completed"
+
+          return (
+            <g key={`connection-${index}`}>
+              {/* Linha de base mais larga */}
+              <path
+                d={path}
+                fill="none"
+                stroke={isActive ? "url(#completedGradient)" : "url(#pendingGradient)"}
+                strokeWidth={connection.completed ? 4 : 2}
+                strokeLinecap="round"
+                markerEnd={isActive ? "url(#arrowCompleted)" : "url(#arrowPending)"}
+                opacity={isActive ? 1 : 0.5}
+                filter={connection.completed ? "url(#glow)" : "none"}
+              />
+
+              {/* Efeito de fluxo para conexões ativas */}
+              {isActive && (
+                <path
+                  d={path}
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeDasharray="1,15"
+                  className="animate-flow"
+                />
+              )}
+            </g>
+          )
+        })}
+      </svg>
     </div>
   )
 }

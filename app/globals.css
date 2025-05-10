@@ -77,11 +77,13 @@
 
 /* Map background */
 .bg-aoe-map-bg {
-  background-image: url("/images/aoe4/map-background.png");
+  background-color: #0f172a;
+  background-image: radial-gradient(circle at 20% 30%, rgba(30, 64, 175, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 60%, rgba(126, 34, 206, 0.1) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23334155' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   background-size: cover;
   background-position: center;
   opacity: 0.3;
-  background-color: var(--aoe-dark-blue);
 }
 
 /* Panel background */
@@ -163,11 +165,126 @@
 @keyframes pulse-slow {
   0%,
   100% {
-    opacity: 1;
-  }
-  50% {
     opacity: 0.7;
   }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-very-slow {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes flow {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes attack-pulse {
+  0%,
+  100% {
+    stroke-opacity: 0.3;
+    stroke-width: 1.5;
+  }
+  50% {
+    stroke-opacity: 0.8;
+    stroke-width: 2.5;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-5px) translateX(3px);
+  }
+  50% {
+    transform: translateY(0) translateX(5px);
+  }
+  75% {
+    transform: translateY(5px) translateX(2px);
+  }
+}
+
+@keyframes fog {
+  0%,
+  100% {
+    filter: url(#fogFilter);
+    opacity: 0.4;
+  }
+  50% {
+    filter: none;
+    opacity: 0.6;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+.animate-pulse-very-slow {
+  animation: pulse-very-slow 4s ease-in-out infinite;
+}
+
+.animate-flow {
+  animation: flow 1.5s linear infinite;
+}
+
+.animate-attack-pulse {
+  animation: attack-pulse 1s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-fog {
+  animation: fog 5s ease-in-out infinite;
+}
+
+.territory-player {
+  filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
+}
+
+.territory-name {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .animate-pulse-slow {

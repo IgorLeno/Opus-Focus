@@ -10,6 +10,9 @@ import { FogAttackModal } from "@/components/fog-attack-modal"
 import { VictoryModal } from "@/components/victory-modal"
 import { TopMenu } from "@/components/top-menu"
 import type { Territory, Mission, FogAttack } from "@/types/war-room"
+import { AmbientSounds } from "@/components/ambient-sounds"
+// Importar a versão alternativa caso seja necessária
+// import { AmbientSoundsWebAudio } from "@/components/ambient-sounds-web-audio"
 
 // Dados de exemplo para demonstração
 const exampleTerritories: Territory[] = [
@@ -138,6 +141,25 @@ export default function WarRoomPage() {
   })
   const [activeFogAttack, setActiveFogAttack] = useState<FogAttack | null>(null)
   const [showVictoryModal, setShowVictoryModal] = useState(false)
+  const [audioEnabled, setAudioEnabled] = useState(false)
+
+  // Habilitar áudio apenas após interação do usuário
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      setAudioEnabled(true)
+      // Remover event listeners após a primeira interação
+      document.removeEventListener("click", handleUserInteraction)
+      document.removeEventListener("keydown", handleUserInteraction)
+    }
+
+    document.addEventListener("click", handleUserInteraction)
+    document.addEventListener("keydown", handleUserInteraction)
+
+    return () => {
+      document.removeEventListener("click", handleUserInteraction)
+      document.removeEventListener("keydown", handleUserInteraction)
+    }
+  }, [])
 
   // Selecionar um território
   const handleSelectTerritory = (territoryId: string) => {
@@ -351,6 +373,7 @@ export default function WarRoomPage() {
               onSelectTerritory={handleSelectTerritory}
               onStartTask={handleStartTask}
             />
+            <div className="absolute top-4 right-4 z-10">{audioEnabled && <AmbientSounds scene="warRoom" />}</div>
           </div>
 
           {/* Painel lateral direito - Detalhes e Log */}

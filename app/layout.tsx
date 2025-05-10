@@ -4,6 +4,7 @@ import { Inter, Cinzel, MedievalSharp } from "next/font/google"
 import "./globals.css"
 import { Sidebar } from "@/components/sidebar"
 import { Toaster } from "@/components/ui/toaster"
+import { SoundProvider } from "@/contexts/sound-context"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel", weight: ["400", "500", "600", "700"] })
@@ -27,12 +28,14 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="dark">
       <body className={`${inter.variable} ${cinzel.variable} ${medievalSharp.variable} bg-aoe-dark-blue min-h-screen`}>
-        <div className="fixed inset-0 bg-[url('/images/aoe4/background-texture.png')] bg-cover bg-center opacity-20 z-0 pointer-events-none"></div>
-        <div className="flex relative z-10 min-h-screen">
-          <Sidebar />
-          <div className="flex-1 ml-16 overflow-x-hidden">{children}</div>
-        </div>
-        <Toaster />
+        <SoundProvider>
+          <div className="fixed inset-0 bg-[url('/images/aoe4/background-texture.png')] bg-cover bg-center opacity-20 z-0 pointer-events-none"></div>
+          <div className="flex relative z-10 min-h-screen">
+            <Sidebar />
+            <div className="flex-1 ml-16 overflow-x-hidden">{children}</div>
+          </div>
+          <Toaster />
+        </SoundProvider>
       </body>
     </html>
   )
