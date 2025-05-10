@@ -1,5 +1,4 @@
 "use client"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   HomeIcon,
@@ -12,11 +11,16 @@ import {
   BuildingIcon,
 } from "lucide-react"
 import { AoE4SidebarItem } from "./aoe4-sidebar-item"
+import Link from "next/link"
 
 export function Sidebar() {
   const pathname = usePathname()
 
   const isActive = (path: string) => {
+    // Special case for war-room (Mapa do Dia)
+    if (path === "/war-room" && pathname === "/map-of-day") {
+      return true
+    }
     return pathname === path
   }
 
@@ -41,10 +45,10 @@ export function Sidebar() {
         />
 
         <AoE4SidebarItem
-          href="/map-of-day"
+          href="/war-room"
           icon={<CalendarIcon className="w-5 h-5" />}
           label="Mapa do Dia"
-          isActive={isActive("/map-of-day")}
+          isActive={isActive("/war-room")}
         />
 
         <AoE4SidebarItem

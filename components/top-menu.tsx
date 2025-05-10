@@ -1,7 +1,6 @@
 "use client"
 import Link from "next/link"
-import Image from "next/image"
-import { Settings, BarChart2, ShoppingBag } from 'lucide-react'
+import { Settings, BarChart2, ShoppingBag } from "lucide-react"
 
 interface TopMenuProps {
   activeItem: string
@@ -15,13 +14,11 @@ export function TopMenu({ activeItem }: TopMenuProps) {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <div className="mr-8">
-                <Image
-                  src="/placeholder.svg?height=60&width=180"
-                  alt="Conquer Focus"
-                  width={180}
-                  height={60}
-                  className="object-contain"
-                />
+                <Link href="/qg">
+                  <div className="flex items-center">
+                    <span className="text-aoe-gold font-cinzel text-xl font-bold">Conquer Focus</span>
+                  </div>
+                </Link>
               </div>
 
               <nav className="hidden md:flex items-center space-x-1">

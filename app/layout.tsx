@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="dark">
       <body className={`${inter.variable} ${cinzel.variable} ${medievalSharp.variable} bg-aoe-dark-blue min-h-screen`}>
-        <div className="fixed inset-0 bg-[url('/images/aoe4/background-texture.jpg')] bg-cover bg-center opacity-20 z-0 pointer-events-none"></div>
+        <div className="fixed inset-0 bg-[url('/images/aoe4/background-texture.png')] bg-cover bg-center opacity-20 z-0 pointer-events-none"></div>
         <div className="flex relative z-10 min-h-screen">
           <Sidebar />
           <div className="flex-1 ml-16 overflow-x-hidden">{children}</div>
